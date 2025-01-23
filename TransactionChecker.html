@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Reference Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .output {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Transaction Reference Checker</h2>
+        <label for="numberInput">Enter Number:</label>
+        <input type="number" id="numberInput" placeholder="Enter number">
+        <label for="referenceInput">Enter Transaction Reference:</label>
+        <input type="text" id="referenceInput" placeholder="Enter reference">
+        <button onclick="checkTransaction()">Check Reference</button>
+        <div id="output" class="output"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Name</th>
+                    <th>Batch</th>
+                    <th>Transaction Reference</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody id="recordTable">
+                <!-- Dynamic rows will be appended here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const data = [
+            { number: 1, name: "Shanthi Nayana", batch: 89 },
+            { number: 2, name: "Renuka Batuwatta", batch: 89 },
+            { number: 3, name: "Jayani Jayaweera", batch: 89 },
+            { number: 4, name: "Imani Withanachchi", batch: 89 },
+            { number: 5, name: "Deepani Kosgallana", batch: 89 },
+            { number: 6, name: "Thushita Withanachchi", batch: 89 },
+            { number: 7, name: "Nilmini Jeewika", batch: 91 },
+            { number: 8, name: "Devika Malavithantri", batch: 87 },
+            { number: 9, name: "Manel Batuwatta", batch: 90 },
+            { number: 10, name: "Sobani", batch: 91 },
+            { number: 11, name: "Nilanka Liyanage", batch: 90 },
+            { number: 12, name: "Saroji Gamage", batch: 91 },
+            { number: 13, name: "Chamari Kariyawasam", batch: 91 },
+            { number: 14, name: "Devika Hemali", batch: 89 },
+            { number: 15, name: "Kumuduni Nishanthi", batch: 89 },
+            { number: 16, name: "Nalika Dias", batch: 89 },
+            { number: 17, name: "Agra Disanayaka", batch: 89 },
+            { number: 18, name: "Renusha De Silva", batch: 89 },
+            { number: 19, name: "Wasanthi Manoari", batch: 90 },
+            { number: 20, name: "Araliya", batch: 91 },
+            { number: 21, name: "Champika", batch: 91 },
+            { number: 22, name: "Ramani Gamlath", batch: 88 },
+            { number: 23, name: "Pavithra", batch: 88 },
+            { number: 24, name: "Rasika Jayarathna", batch: 90 },
+            { number: 25, name: "Shamali Dias", batch: 89 },
+            { number: 26, name: "Nadeeka Abeywicrama", batch: 89 },
+            { number: 27, name: "Lekha Bogahawaththa", batch: 92 },
+            { number: 28, name: "Beeta Sudarshani", batch: 89 },
+            { number: 29, name: "Thusari Imalka", batch: 89 },
+            { number: 30, name: "Renuka Godage", batch: 90 },
+            { number: 31, name: "Priyanka Manamperi", batch: 89 },
+            { number: 32, name: "Manori Mendis", batch: 89 },
+            { number: 33, name: "Kumuduni Samaranayaka", batch: 89 },
+            { number: 34, name: "Nalika Thrimawithana", batch: 88 },
+            { number: 35, name: "Mala Wasanthi Jayasekar", batch: 88 },
+            { number: 36, name: "Manora Illesinge", batch: 92 },
+            { number: 37, name: "Sandya Kumari", batch: 89 },
+            { number: 38, name: "L E Rani Shanthi", batch: 87 },
+            { number: 39, name: "Dayashanthi Trimawithana", batch: 87 },
+            { number: 40, name: "Yamuna Dahanayaka", batch: 90 },
+            { number: 41, name: "Thamara Illesingha", batch: 90 },
+            { number: 42, name: "Shiromi Kodithuwakku", batch: 90 },
+            { number: 43, name: "Gangani Panditha", batch: 88 },
+            { number: 44, name: "Priyanthi Pushpamali", batch: 78 },
+            { number: 45, name: "Priyanthi's husband", batch: "FAMI" },
+            { number: 46, name: "Piyumi Siriwardana", batch: 92 },
+            { number: 47, name: "Chathuri", batch: 92 },
+            { number: 48, name: "Tiroma Rajapakshe", batch: 90 },
+            { number: 49, name: "Ranya Godakanda", batch: 92 },
+            { number: 50, name: "Nishani Weerathunga", batch: 91 },
+            { number: 51, name: "Manula Illangakoon", batch: 92 },
+            { number: 52, name: "Menaka Kaushalya", batch: 89 },
+            { number: 53, name: "Krishana Lakmali", batch: 89 },
+            { number: 54, name: "Inoka Godakanda", batch: 89 },
+            { number: 55, name: "Achini Kalansuriya", batch: 92 },
+            { number: 56, name: "Nandani", batch: 92 },
+            { number: 57, name: "Ayodya Jayawardana", batch: 92 },
+            { number: 58, name: "Manoja Nanayakkara", batch: 92 },
+            { number: 59, name: "Ruvini Thakshila", batch: 92 },
+            { number: 60, name: "Chithra Maitipe", batch: 92 },
+            { number: 61, name: "Chandrika Withanachchi", batch: 89 },
+            { number: 62, name: "Upendra Jalatghe", batch: 90 },
+            { number: 63, name: "Lakshmi Adietti", batch: 88 },
+            { number: 64, name: "Nirosha Jayasena", batch: 90 },
+            { number: 65, name: "Dumina Kariyawasam", batch: 92 },
+            { number: 66, name: "Darshi Nadun", batch: 88 },
+            { number: 67, name: "Ajantha Samaranayaka", batch: 90 },
+            { number: 68, name: "Thamara Nissanka", batch: 90 },
+            { number: 69, name: "Padmini Alwis", batch: 90 },
+            { number: 70, name: "Manjula Suhathapala", batch: 92 },
+            { number: 71, name: "Indunil Kariyawasam", batch: 92 },
+            { number: 72, name: "Dulani Champika", batch: 92 },
+            { number: 73, name: "Rishanthi Chandrika", batch: 89 },
+            { number: 74, name: "Manel Herath", batch: 90 },
+            { number: 75, name: "Irani KarunarThna", batch: 90 },
+            { number: 76, name: "Somalatha Aka", batch: 91 },
+            { number: 77, name: "Piyumrani De Silva", batch: 92 },
+            { number: 78, name: "Indrani Godakanda", batch: 92 },
+            { number: 79, name: "Manel Godakanda", batch: 92 },
+            { number: 80, name: "Prabhashini", batch: 92 },
+            { number: 81, name: "Champika Neranjali", batch: 89 },
+            { number: 82, name: "Neelika Hettiarachchi", batch: 91 },
+            { number: 83, name: "Deepika Guruge", batch: 89 },
+            { number: 84, name: "Ramaya Wanniarachchi", batch: 91 },
+            { number: 85, name: "Sagarika Jayarathna", batch: 89 },
+            { number: 86, name: "Champa Jayawardena", batch: 89 },
+            { number: 87, name: "Roshi Addihetti", batch: 89 },
+            { number: 88, name: "Shayama Palihawadana", batch: 92 },
+            { number: 89, name: "Priyanandani Jalatghe", batch: 90 },
+            { number: 90, name: "Leena Gayani", batch: 92 },
+            { number: 91, name: "Swarna Nimasha", batch: 92 },
+            { number: 92, name: "Pradeepa", batch: 92 },
+            { number: 93, name: "Nilmini Geetha", batch: 92 },
+            { number: 94, name: "Janaki Sumanasekara", batch: 91 },
+            { number: 95, name: "Dilani Nanayakkara", batch: 89 },
+            { number: 96, name: "Dishna Priyangani Mendis", batch: 90 },
+            { number: 97, name: "Kamani Pathinayaka", batch: 89 },
+            { number: 98, name: "Subhashini Lianawattha", batch: 90 },
+            { number: 99, name: "Thrathna Gurugamage", batch: 91 },
+            { number: 100, name: "Malika", batch: 90 },
+            { number: 101, name: "Lalani", batch: 92 },
+            { number: 102, name: "Nayana Weerasingha", batch: 91 },
+            { number: 103, name: "Thilini Chandarsoma", batch: 89 },
+            { number: 104, name: "Priyanka Mohotti", batch: 92 },
+            { number: 105, name: "Prabha Amarasekara", batch: 90 },
+            { number: 106, name: "Rupika Gunawardana", batch: 92 },
+            { number: 107, name: "Priyanka Weeratunga", batch: 89 },
+            { number: 108, name: "Lanka Suarngani", batch: 92 },
+            { number: 109, name: "Dammi Nishanthi", batch: 91 },
+            { number: 110, name: "Nishani Disanayaka", batch: 89 },
+            { number: 111, name: "Gaya Kushanthi", batch: 92 },
+            { number: 112, name: "Thamnindi Darshika", batch: 92 },
+            { number: 113, name: "Nilani Nanayakkara", batch: 89 },
+            { number: 114, name: "Sandya Kodithuwakku", batch: 91 },
+            { number: 115, name: "Malika Damayanthi", batch: 92 },
+            { number: 116, name: "Bimalka Jayawardana", batch: 92 },
+            { number: 117, name: "Inoka", batch: 92 },
+            { number: 118, name: "Chandra", batch: 91 },
+            { number: 119, name: "Nirmala", batch: 92 },
+            { number: 120, name: "Damayanthi", batch: 92 },
+            { number: 121, name: "Rupika", batch: 92 },
+            { number: 122, name: "Nilakthi Akmeemana", batch: 92 },
+            { number: 123, name: "Nalika Kumuduni", batch: 89 },
+            { number: 124, name: "Priyanka Liyanage", batch: 92 },
+            { number: 125, name: "Indika Manori", batch: 92 },
+            { number: 126, name: "Shayamali Haththotuwa", batch: 89 },
+            { number: 127, name: "Shama Kumuduni", batch: 88 }
+        ];
+
+        const enteredReferences = [];
+
+        function checkTransaction() {
+            const numberInput = document.getElementById('numberInput').value.trim();
+            const referenceInput = document.getElementById('referenceInput').value.trim();
+            const output = document.getElementById('output');
+            const table = document.getElementById('recordTable');
+
+            if (!numberInput || !referenceInput) {
+                output.innerHTML = `<p style="color: red;">Please fill in both fields.</p>`;
+                return;
+            }
+
+            const record = data.find(item => item.number == numberInput);
+
+            if (!record) {
+                output.innerHTML = `<p style="color: red;">Invalid number. No matching record found.</p>`;
+                return;
+            }
+
+            let message = '';
+
+            if (enteredReferences.includes(referenceInput)) {
+                message = `<p style="color: red;">Transaction reference <strong>${referenceInput}</strong> has already been entered before.</p>`;
+            } else {
+                enteredReferences.push(referenceInput);
+                message = `<p style="color: green;">Transaction reference <strong>${referenceInput}</strong> is new and has been recorded.</p>`;
+            }
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${record.number}</td>
+                <td>${record.name}</td>
+                <td>${record.batch}</td>
+                <td>${referenceInput}</td>
+                <td>${message.replace(/<[^>]+>/g, '')}</td>
+            `;
+            table.appendChild(newRow);
+
+            output.innerHTML = message;
+
+            document.getElementById('numberInput').value = '';
+            document.getElementById('referenceInput').value = '';
+        }
+    </script>
+</body>
+</html>
+
+            
